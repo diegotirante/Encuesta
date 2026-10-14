@@ -23,6 +23,7 @@ module.exports = async (req, res) => {
     await store.set(vid, { name, phone, first: b.first, second: b.second, ts: Date.now() });
     return res.status(200).json({ ok: true });
   } catch (e) {
-    return res.status(503).json({ error: 'storage' });
+    const reason = e && e.message === 'storage_not_configured' ? 'not_configured' : 'rejected';
+    return res.status(503).json({ error: 'storage', reason });
   }
 };
