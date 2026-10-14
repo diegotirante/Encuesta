@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#e6d8bd">
+<title>Identidad Visual TIRANTE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: boleta de votación. Talón de puntos (2 y 1), cinco fachadas en grilla, barra de envío fija.
+   El informe del dueño usa barras apiladas por puntos de 1.ª y 2.ª opción. Tipografía de marca: Montserrat. */
+:root{
+  --font:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --bg:#e6d8bd; --surface:#f4ecdb; --ink:#17140f; --ink-2:#3b352b; --muted:#574d38; --line:#cbbb9d; --track:#d8c8aa; color-scheme:light;
+  --accent:#c0181c; --accent-ink:#ffffff; --crimson:#d42023; --seg1:#1c1c1c; --seg2:#9c8f7c;
+  --err:#a8141a; --ok:#1f6b45; --scrim:rgba(20,18,15,.9); --focus:#141414;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font); font-size:15px; line-height:1.55; background:var(--bg); color:var(--ink);
+  padding-block:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:600px;margin:0 auto;padding-block:0 48px}
+.wrap.has-bar{padding-bottom:150px}
+h1,h2,h3,p{margin:0}
+h1{font-weight:800;font-size:clamp(28px,6.4vw,42px);line-height:1.08;letter-spacing:-.02em;text-wrap:balance}
+h2{font-weight:700;font-size:20px;line-height:1.25;text-wrap:balance}
+.muted{color:var(--muted)}
+.label{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* Cabecera */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;padding-block:18px;border-bottom:1px solid var(--line)}
+.wm{display:flex;align-items:center;gap:10px;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.wm b{font-weight:800;font-size:clamp(22px,5.4vw,28px);letter-spacing:-.01em;line-height:1}
+.wm sup{font-size:.48em;font-weight:500;vertical-align:top;position:relative;top:-.15em;margin-left:1px}
+.wm .bar{width:3px;height:30px;background:var(--crimson);flex:none}
+.wm small{font-weight:500;font-size:12px;line-height:1.15;color:var(--ink-2)}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);padding:4px;border-radius:10px}
+.tab{font:600 14px var(--font);padding:8px 14px;border-radius:7px;border:0;background:transparent;color:var(--ink-2);cursor:pointer;min-height:38px}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.tab .count{font-variant-numeric:tabular-nums;opacity:.8;margin-left:4px}
+
+/* Introducción y reglas */
+.intro{display:grid;gap:14px;padding-block:30px 6px;max-width:68ch}
+.intro p{color:var(--ink-2)}
+.how{display:grid;gap:14px;margin-block:26px 22px}
+.stubs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
+.stubs li{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.stubs li div{display:grid;min-width:0}
+.stubs li span.sub{font-size:13px;color:var(--muted)}
+.pts{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:10px;font-weight:800;font-size:28px;line-height:1;background:var(--accent);color:var(--accent-ink);border:2px solid var(--accent)}
+.pts.second{background:transparent;color:var(--accent);border-style:dashed}
+
+/* Campos */
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px;margin-block:0 26px}
+label.f{display:grid;gap:6px;font-weight:600;font-size:13px;color:var(--ink-2);min-width:0}
+input,select{font:500 16px var(--font);padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);width:100%;min-width:0;min-height:48px}
+input::placeholder{color:var(--muted)}
+
+/* Opciones de marquesina */
+.opts{display:grid;gap:26px;grid-template-columns:1fr}
+.opt{display:flex;flex-direction:column;min-width:0;background:var(--surface);border:2px solid var(--line);border-radius:16px;overflow:hidden}
+.opt.is-1{border-color:var(--accent)}
+.opt.is-2{border-color:var(--accent);border-style:dashed}
+.shot{display:grid;gap:0;margin:0}
+.thumb{position:relative;display:block;width:100%;padding:0;border:0;background:var(--track);cursor:zoom-in;overflow:hidden}
+.thumb img{display:block;width:100%;height:auto}
+.cap{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:10px 14px 8px}
+.opt .head{padding:14px 14px 4px}
+.opt .dots{padding:0 14px 12px}
+.tag{position:absolute;left:10px;top:10px;font-weight:700;font-size:12px;padding:5px 10px;border-radius:999px;background:var(--accent);color:var(--accent-ink);letter-spacing:.02em}
+.opt.is-2 .tag{background:var(--surface);color:var(--accent);border:2px dashed var(--accent);padding:3px 10px}
+.zoomhint{position:absolute;right:10px;bottom:10px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--scrim);color:#fff}
+.meta{display:grid;gap:10px;padding:14px}
+.head{display:flex;align-items:center;gap:10px;min-width:0}
+.letter{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:800;background:var(--ink);color:var(--bg)}
+.head h3{font-size:16px;font-weight:700;line-height:1.2}
+.dots{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.dots i{flex:none;width:16px;height:16px;border-radius:50%;border:1px solid var(--line)}
+.picks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pick{font:600 14px var(--font);padding:10px 6px;border-radius:9px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;min-height:54px}
+.pick b{font-weight:800}
+.pick:hover{border-color:var(--accent)}
+.pick[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.thanks{margin-top:28px;font-weight:600;color:var(--ink-2)}
+
+/* Botones */
+.btn{font:700 15px var(--font);padding:13px 22px;border-radius:10px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;min-height:48px}
+.btn[disabled]{background:var(--track);border-color:var(--track);color:var(--muted);cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.small{padding:8px 14px;min-height:38px;font-size:14px}
+
+/* Barra de envío */
+.sendbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);
+  padding-top:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sendin{max-width:600px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px}
+.sumtxt{display:grid;gap:2px;min-width:0}
+.sum{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px}
+.sum b{font-weight:700}
+.need{font-size:12.5px;color:var(--muted)}
+
+/* Tarjetas de estado */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:14px;margin-top:26px}
+.card.err h2{color:var(--err)}
+.done-line{display:flex;align-items:center;gap:10px;color:var(--ok);font-weight:700}
+.picked{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.picked li{display:flex;align-items:center;gap:12px}
+.picked img{width:56px;height:42px;object-fit:cover;object-position:50% 30%;border-radius:6px;border:1px solid var(--line);flex:none}
+textarea{font:500 14px var(--mono);padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%;min-height:110px;resize:vertical}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+a.btn{display:inline-flex;align-items:center;text-decoration:none}
+
+/* Resultados */
+.rhead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:28px 0}
+.win{display:grid;gap:10px}
+.win h2{font-size:clamp(22px,5vw,28px)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;font:500 13px var(--mono);padding:6px 11px;border:1px solid var(--line);border-radius:999px;background:var(--bg)}
+.chip i{width:14px;height:14px;border-radius:50%;border:1px solid var(--line)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink-2)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.rank{list-style:none;margin:0;padding:0;display:grid;gap:16px}
+.rrow,.arow{display:grid;grid-template-columns:24px 56px minmax(0,1fr);gap:12px;align-items:center}
+.rn{font-weight:800;font-size:18px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:center}
+.rthumb{width:56px;height:42px;border-radius:6px;object-fit:cover;object-position:50% 30%;border:1px solid var(--line);display:block}
+.rbody{display:grid;gap:4px;min-width:0}
+.rtop{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.rname{font-weight:700}
+.rpts{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rsub{font-size:12.5px;color:var(--muted)}
+.track{display:flex;gap:2px;height:12px;background:var(--track);border-radius:0 4px 4px 0}
+.seg{height:100%}
+.seg.s1{background:var(--seg1)}
+.seg.s2{background:var(--seg2)}
+.seg:last-child{border-radius:0 4px 4px 0}
+.arow{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:6px}
+.arow .ax{grid-column:3;display:flex;justify-content:space-between}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+.mini{font-size:12px;color:var(--muted)}
+.link{background:none;border:0;color:var(--err);font:600 13px var(--font);cursor:pointer;padding:8px 4px;min-height:36px}
+.mform{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px;align-items:end}
+.msg{font-size:14px;min-height:1.2em}
+.msg.bad{color:var(--err)}
+.msg.good{color:var(--ok)}
+.section-gap{display:grid;gap:14px;margin-top:26px}
+
+/* Imagen ampliada */
+.zoom{position:fixed;inset:0;z-index:50;background:var(--scrim);color:#fff;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;
+  padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(16px,env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.zbar{display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700}
+.zx{font:600 15px var(--font);color:#fff;background:transparent;border:1.5px solid #fff;border-radius:999px;padding:8px 16px;cursor:pointer;min-height:40px}
+.zmid{min-height:0;display:flex;justify-content:center;align-items:center;overflow:auto}
+.zmid img{max-width:100%;max-height:calc(100dvh - 210px);width:auto;height:auto;object-fit:contain;border-radius:8px}
+.zmid.big{display:block;-webkit-overflow-scrolling:touch}
+.zmid.big img{max-width:none;max-height:none;width:max(230%,980px);border-radius:0}
+.zact{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.zact .btn{background:#fff;border-color:#fff;color:#0a1f44}
+.zact .btn.ghost{background:transparent;color:#fff}
+@media (prefers-reduced-motion:no-preference){.opt{transition:border-color .15s}}
+
+/* Base propia (en la web no hay reseteo de la plataforma) */
+body{margin:0}
+img{max-width:100%}
+.login{position:fixed;inset:0;z-index:60;background:var(--scrim);display:grid;place-items:center;
+  padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+.login form{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:22px;width:100%;max-width:380px;display:grid;gap:14px}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <header class="top">
+    <div class="wm" aria-label="TIRANTE Bienes Raíces">
+      <b>TIRANTE<sup>®</sup></b><span class="bar" aria-hidden="true"></span><small>Bienes<br>Raíces.</small>
+    </div>
+    <div class="tabs" id="tabs" role="tablist" aria-label="Vistas" hidden>
+      <button class="tab" id="tab-votar" role="tab" aria-selected="true" type="button">Votar</button>
+      <button class="tab" id="tab-res" role="tab" aria-selected="false" type="button">Resultados<span class="count" id="tabcount"></span></button>
+    </div>
+  </header>
+
+  <!-- VOTAR -->
+  <main id="v-votar">
+    <div id="ballot">
+      <section class="intro">
+        <p class="label">TIRANTE® | Bienes Raíces</p>
+        <h1>Encuesta de Identidad Visual</h1>
+        <p>¡Hola! Fuiste seleccionado/a especialmente para darnos tu opinión sobre la imagen corporativa y la presencia visual de TIRANTE® | Bienes Raíces. Estamos definiendo el diseño final de la fachada de nuestra nueva oficina y queremos conocer tu preferencia sobre las combinaciones de colores para nuestra marquesina principal.</p>
+      </section>
+
+      <section class="how" aria-labelledby="how-h">
+        <h2 id="how-h">¿Cómo funciona la votación?</h2>
+        <ol class="stubs">
+          <li><span class="pts" aria-hidden="true">2</span><div><b>1.ª opción</b><span class="sub">Tu preferida · 2 puntos</span></div></li>
+          <li><span class="pts second" aria-hidden="true">1</span><div><b>2.ª opción</b><span class="sub">Tu segunda opción · 1 punto</span></div></li>
+        </ol>
+        <p class="muted">Cada opción muestra la fachada y cómo se vería el merchandising. Tocá una imagen para verla en grande. Elegí una sola opción para cada lugar.</p>
+      </section>
+
+      <div class="fields">
+        <label class="f" for="nombre">Tu nombre
+          <input id="nombre" type="text" autocomplete="name" placeholder="Nombre y apellido" maxlength="80">
+        </label>
+        <label class="f" for="wsp">WhatsApp (opcional)
+          <input id="wsp" type="tel" autocomplete="tel" inputmode="tel" placeholder="Para saber quién votó" maxlength="30">
+        </label>
+      </div>
+
+      <section id="opts" class="opts" aria-label="Opciones de marquesina"></section>
+      <p class="thanks">¡Gracias por formar parte de la evolución de TIRANTE®!</p>
+    </div>
+
+    <div id="hecho" hidden>
+      <section class="card" id="hecho-card"></section>
+    </div>
+  </main>
+
+  <!-- RESULTADOS -->
+  <section id="v-res" hidden aria-label="Resultados de la votación">
+    <div id="res"></div>
+    <section class="card" id="manual-card">
+      <h2>Cargar un voto recibido por WhatsApp</h2>
+      <p class="muted">Si alguien te manda su voto por mensaje, cargalo acá y se suma al ranking.</p>
+      <form id="manual" class="mform" novalidate>
+        <label class="f" for="m-nombre">Nombre
+          <input id="m-nombre" type="text" maxlength="80" placeholder="Nombre y apellido">
+        </label>
+        <label class="f" for="m-wsp">WhatsApp (opcional)
+          <input id="m-wsp" type="tel" inputmode="tel" maxlength="30">
+        </label>
+        <label class="f" for="m-1">1.ª opción (2 pts)
+          <select id="m-1"></select>
+        </label>
+        <label class="f" for="m-2">2.ª opción (1 pt)
+          <select id="m-2"></select>
+        </label>
+        <button class="btn" type="submit" id="m-send">Cargar voto</button>
+      </form>
+      <p class="msg" id="m-msg" role="status" aria-live="polite"></p>
+    </section>
+  </section>
+</div>
+
+<div class="sendbar" id="sendbar">
+  <div class="sendin">
+    <div class="sumtxt">
+      <div class="sum"><span>1.ª opción: <b id="s1">sin elegir</b></span><span>2.ª opción: <b id="s2">sin elegir</b></span></div>
+      <div class="need" id="need" role="status" aria-live="polite"></div>
+    </div>
+    <button class="btn" id="send" type="button" disabled>Enviar mi voto</button>
+  </div>
+</div>
+
+<div class="zoom" id="zoom" role="dialog" aria-modal="true" aria-labelledby="zcap" hidden>
+  <div class="zbar"><span id="zcap"></span><button class="zx" id="zx" type="button">Cerrar</button></div>
+  <div class="zmid" id="zmid"><img id="zimg" alt=""></div>
+  <div class="zact">
+    <button class="btn ghost" id="zt" type="button">Acercar</button>
+    <button class="btn" id="z1" type="button">Elegir como 1.ª · 2 pts</button>
+    <button class="btn ghost" id="z2" type="button">Elegir como 2.ª · 1 pt</button>
+  </div>
+</div>
+
+<div class="login" id="login" hidden>
+  <form id="lform" role="dialog" aria-modal="true" aria-labelledby="lh" autocomplete="off">
+    <h2 id="lh">Resultados</h2>
+    <p class="muted">Ingresá la contraseña para ver los votos.</p>
+    <label class="f" for="lpw">Contraseña
+      <input id="lpw" type="password" autocomplete="current-password">
+    </label>
+    <p class="msg" id="lmsg" role="status" aria-live="polite"></p>
+    <div class="actions">
+      <button class="btn" type="submit" id="lgo">Entrar</button>
+      <button class="btn ghost" type="button" id="lcancel">Cancelar</button>
+    </div>
+  </form>
+</div>
+
+<script>
+(function(){
+  var OPTS=[
+    {k:'a',n:'Azul marino',m:'#091f3f',b:'#4b91cc',alt:'Fachada de la oficina con marquesina azul marino y barra celeste',web:['#0a1f44','#55a0db','#d42023']},
+    {k:'b',n:'Azul eléctrico',m:'#0086fa',b:'#9d273a',alt:'Fachada de la oficina con marquesina azul eléctrico y barra roja',web:['#008fff','#55a0db','#d42023']},
+    {k:'c',n:'Azul acero',m:'#386492',b:'#c3383d',alt:'Fachada de la oficina con marquesina azul acero y barra roja',web:['#3b6ea5','#e23b3b']},
+    {k:'d',n:'Negro y rojo',m:'#171d25',b:'#bb1128',alt:'Fachada de la oficina con marquesina negra y barra roja',web:['#161a20','#c81e2a','#5b6b84']},
+    {k:'e',n:'Bordó',m:'#6f0317',b:'#080000',alt:'Fachada de la oficina con marquesina bordó y barra negra',web:[]}
+  ];
+  var BY={}; OPTS.forEach(function(o){BY[o.k]=o;});
+  function L(k){return k.toUpperCase();}
+  function label(k){return BY[k]?('Opción '+L(k)+' · '+BY[k].n):'—';}
+  function $(id){return document.getElementById(id);}
+  function h(tag,props){
+    var e=document.createElement(tag),p=props||{};
+    for(var k in p){var v=p[k]; if(v==null||v===false)continue;
+      if(k==='class')e.className=v; else if(k==='text')e.textContent=v;
+      else if(k==='style')e.style.cssText=v;
+      else if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),v);
+      else e.setAttribute(k,v===true?'':v);}
+    for(var i=2;i<arguments.length;i++){var c=arguments[i]; if(c==null||c===false)continue;
+      if(Array.isArray(c)){c.forEach(function(x){if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(String(x)));});}
+      else e.append(c.nodeType?c:document.createTextNode(String(c)));}
+    return e;
+  }
+  function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+
+  var admin=false,adminKey='',pollTm=null,loadErr=false;
+  var sel={1:null,2:null},sending=false,view='votar',done=false,ballots=[],zoomKey=null,lastFocus=null;
+  var cards={};
+
+  /* ---------- Identificador anónimo del dispositivo (un voto por dispositivo) ---------- */
+  function rand(){
+    try{var a=new Uint8Array(18);crypto.getRandomValues(a);return Array.prototype.map.call(a,function(x){return ('0'+x.toString(36)).slice(-2);}).join('');}
+    catch(e){return (Date.now().toString(36)+Math.random().toString(36).slice(2)+'0000000000000000').slice(0,28);}
+  }
+  var memVid=null;
+  function getVid(){
+    var v=store('tirante-vid');
+    if(!v||!/^[A-Za-z0-9_-]{16,64}$/.test(v)){v=memVid||rand();memVid=v;store('tirante-vid',v);}
+    return v;
+  }
+
+  /* ---------- Boleta ---------- */
+  function buildOptions(){
+    var box=$('opts');
+    OPTS.forEach(function(o){
+      var tag=h('span',{class:'tag',hidden:true});
+      var b1=h('button',{type:'button',class:'pick','aria-pressed':'false',onclick:function(){pick(o.k,1);}},h('b',{text:'1.ª'}),' · 2 pts');
+      var b2=h('button',{type:'button',class:'pick','aria-pressed':'false',onclick:function(){pick(o.k,2);}},h('b',{text:'2.ª'}),' · 1 pt');
+      var card=h('article',{class:'opt',id:'opt-'+o.k},
+        h('div',{class:'head'},h('span',{class:'letter',text:L(o.k)}),h('h3',{text:o.n})),
+        h('div',{class:'dots',title:'Color de la marquesina y de la barra'},h('i',{style:'background:'+o.m}),h('i',{style:'background:'+o.b}),h('span',{text:'Marquesina y barra'})),
+        h('figure',{class:'shot'},h('figcaption',{class:'cap',text:'Fachada'}),
+          h('button',{type:'button',class:'thumb','aria-label':'Ver en grande la fachada de la '+label(o.k),onclick:function(){openZoom(o.k,'f');}},
+            h('img',{src:'img/'+o.k+'.jpg',width:800,height:1067,alt:o.alt,loading:'lazy'}),tag,h('span',{class:'zoomhint',text:'Ampliar'}))),
+        h('figure',{class:'shot'},h('figcaption',{class:'cap',text:'Merchandising'}),
+          h('button',{type:'button',class:'thumb','aria-label':'Ver en grande el merchandising de la '+label(o.k),onclick:function(){openZoom(o.k,'m');}},
+            h('img',{src:'img/'+o.k+'-m.jpg',width:1200,height:670,alt:'Merchandising de la opción '+L(o.k)+' con los colores de esa marquesina',loading:'lazy'}),h('span',{class:'zoomhint',text:'Ampliar'}))),
+        h('div',{class:'meta'},
+          h('div',{class:'picks',role:'group','aria-label':'Elegir la '+label(o.k)},b1,b2)));
+      cards[o.k]={card:card,tag:tag,b1:b1,b2:b2};
+      box.append(card);
+    });
+  }
+  function pick(k,rank){
+    var other=rank===1?2:1;
+    if(sel[rank]===k){sel[rank]=null;}
+    else{sel[rank]=k; if(sel[other]===k)sel[other]=null;}
+    updateSelection();
+  }
+  function nameVal(){return $('nombre').value.trim();}
+  function updateSelection(){
+    OPTS.forEach(function(o){
+      var c=cards[o.k],r=sel[1]===o.k?1:(sel[2]===o.k?2:0);
+      c.card.classList.toggle('is-1',r===1); c.card.classList.toggle('is-2',r===2);
+      c.b1.setAttribute('aria-pressed',String(r===1)); c.b2.setAttribute('aria-pressed',String(r===2));
+      c.tag.hidden=!r; c.tag.textContent=r===1?'1.ª opción · 2 pts':(r===2?'2.ª opción · 1 pt':'');
+    });
+    $('s1').textContent=sel[1]?('Opción '+L(sel[1])):'sin elegir';
+    $('s2').textContent=sel[2]?('Opción '+L(sel[2])):'sin elegir';
+    refreshSend();
+  }
+  function refreshSend(){
+    var need='';
+    if(!sel[1]&&!sel[2])need='Elegí tu 1.ª y tu 2.ª opción.';
+    else if(!sel[1])need='Falta tu 1.ª opción.';
+    else if(!sel[2])need='Falta tu 2.ª opción.';
+    else if(nameVal().length<2)need='Escribí tu nombre para enviar el voto.';
+    $('need').textContent=need;
+    $('send').disabled=!!need||sending;
+  }
+  function voteText(b){
+    return 'Mi voto · Encuesta de Identidad Visual TIRANTE®\nNombre: '+b.name+'\n1.ª opción (2 pts): '+label(b.first)+'\n2.ª opción (1 pt): '+label(b.second);
+  }
+  function copyText(text,ta,btn){
+    var orig=btn.textContent;
+    var restore=function(){setTimeout(function(){btn.textContent=orig;},2500);};
+    var fallback=function(){ta.focus();ta.select();btn.textContent='Seleccioná el texto y copialo';restore();};
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){btn.textContent='Copiado';restore();},fallback);
+      }else fallback();
+    }catch(e){fallback();}
+  }
+  function pickedList(b){
+    return h('ul',{class:'picked'},
+      [[b.first,'1.ª opción · 2 pts'],[b.second,'2.ª opción · 1 pt']].map(function(p){
+        return h('li',{},h('img',{src:'img/'+p[0]+'.jpg',alt:'',width:56,height:42}),h('div',{},h('b',{text:label(p[0])}),h('div',{class:'mini',text:p[1]})));
+      }));
+  }
+  function showDone(saved,b){
+    done=true;
+    var card=$('hecho-card'); card.replaceChildren();
+    card.classList.toggle('err',!saved);
+    if(saved){
+      card.append(
+        h('div',{class:'done-line'},h('span',{'aria-hidden':'true',text:'✓'}),h('span',{text:'Voto registrado'})),
+        h('h2',{text:'¡Gracias, '+(b.name||'por votar')+'!'}),
+        h('p',{class:'muted',text:'Tu opinión ya forma parte de la definición de la fachada de TIRANTE®.'}),
+        pickedList(b),
+        h('div',{class:'actions'},h('button',{type:'button',class:'btn ghost small',onclick:backToBallot,text:'Cambiar mi voto'})));
+    }else{
+      var txt=voteText(b);
+      var ta=h('textarea',{readonly:true,'aria-label':'Mensaje con tu voto'}); ta.value=txt;
+      var cp=h('button',{type:'button',class:'btn small',text:'Copiar mensaje'});
+      cp.addEventListener('click',function(){copyText(txt,ta,cp);});
+      card.append(
+        h('h2',{text:'Último paso: mandanos tu voto por WhatsApp'}),
+        h('p',{class:'muted',text:'En este momento no se pudo guardar tu voto automáticamente. Copiá este mensaje y enviáselo por WhatsApp a quien te pasó la encuesta.'}),
+        ta,
+        h('div',{class:'actions'},cp,
+          h('a',{class:'btn ghost small',href:'https://wa.me/?text='+encodeURIComponent(txt),target:'_blank',rel:'noopener',text:'Abrir WhatsApp'}),
+          h('button',{type:'button',class:'btn ghost small',onclick:backToBallot,text:'Volver a la boleta'})));
+    }
+    $('ballot').hidden=true; $('hecho').hidden=false; syncChrome(); window.scrollTo(0,0);
+  }
+  function backToBallot(){done=false;$('ballot').hidden=false;$('hecho').hidden=true;syncChrome();window.scrollTo(0,0);}
+  async function submit(){
+    if($('send').disabled)return;
+    sending=true; refreshSend(); $('send').textContent='Enviando…';
+    var ballot={name:nameVal(),phone:$('wsp').value.trim(),first:sel[1],second:sel[2]};
+    store('tirante-nombre',ballot.name); store('tirante-wsp',ballot.phone);
+    var saved=false;
+    try{
+      var r=await fetch('/api/vote',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:ballot.name,phone:ballot.phone,first:ballot.first,second:ballot.second,vid:getVid()})});
+      saved=r.ok;
+    }catch(e){saved=false;}
+    if(saved)store('tirante-ballot',JSON.stringify(ballot));
+    sending=false; $('send').textContent='Enviar mi voto'; refreshSend();
+    showDone(saved,ballot);
+  }
+
+  /* ---------- Imagen ampliada ---------- */
+  function openZoom(k,kind){
+    zoomKey=k; var o=BY[k],m=kind==='m';
+    $('zimg').src='img/'+k+(m?'-m':'')+'.jpg'; $('zimg').alt=m?('Merchandising de la opción '+L(k)):o.alt;
+    $('zcap').textContent=label(k)+' · '+(m?'Merchandising':'Fachada');
+    $('zmid').classList.remove('big'); $('zt').textContent='Acercar';
+    lastFocus=document.activeElement; $('zoom').hidden=false; $('zx').focus();
+  }
+  function closeZoom(){
+    $('zoom').hidden=true; zoomKey=null;
+    if(lastFocus&&lastFocus.focus)lastFocus.focus();
+  }
+
+  /* ---------- Vistas ---------- */
+  function syncChrome(){
+    var bar=view==='votar'&&!done;
+    $('sendbar').hidden=!bar; $('wrap').classList.toggle('has-bar',bar);
+    $('v-votar').hidden=view!=='votar'; $('v-res').hidden=view!=='res';
+    $('tab-votar').setAttribute('aria-selected',String(view==='votar'));
+    $('tab-res').setAttribute('aria-selected',String(view==='res'));
+  }
+  function showView(v){view=v;syncChrome();if(v==='res'){renderResults();refresh();}}
+
+  /* ---------- Ingreso del administrador ---------- */
+  function api(method,path,body){
+    var headers={'x-admin-key':adminKey};
+    if(body)headers['Content-Type']='application/json';
+    return fetch(path,{method:method,headers:headers,body:body?JSON.stringify(body):undefined});
+  }
+  function updateCount(){$('tabcount').textContent=ballots.length?(' · '+ballots.length):'';}
+  async function refresh(){
+    if(!admin)return;
+    try{
+      var r=await api('GET','/api/admin');
+      if(r.status===401){logout();return;}
+      if(!r.ok)throw new Error('http');
+      var j=await r.json(); ballots=j.votes||[]; loadErr=false;
+    }catch(e){loadErr=true;}
+    updateCount();
+    if(view==='res')renderResults();
+  }
+  function startPoll(){clearInterval(pollTm);pollTm=setInterval(function(){if(!document.hidden&&view==='res')refresh();},15000);}
+  function logout(){
+    admin=false;adminKey='';ballots=[];clearInterval(pollTm);
+    try{sessionStorage.removeItem('tirante-adm');}catch(e){}
+    $('tabs').hidden=true; updateCount(); showView('votar');
+  }
+  function openLogin(){
+    lastFocus=document.activeElement; $('login').hidden=false; $('lpw').value=''; $('lmsg').textContent=''; $('lpw').focus();
+  }
+  function closeLogin(){$('login').hidden=true;if(lastFocus&&lastFocus.focus)lastFocus.focus();}
+  async function doLogin(pw){
+    var m=$('lmsg'),setMsg=function(t,bad){m.textContent=t;m.className='msg'+(bad?' bad':'');};
+    if(!pw){setMsg('Escribí la contraseña.',true);return;}
+    setMsg('Verificando…'); $('lgo').disabled=true; adminKey=pw;
+    try{
+      var r=await api('GET','/api/admin');
+      if(r.status===401){adminKey='';setMsg('Contraseña incorrecta.',true);}
+      else if(r.status===503){adminKey='';setMsg('Falta configurar la contraseña o la base de datos en Vercel.',true);}
+      else if(!r.ok){adminKey='';setMsg('No se pudo entrar. Probá de nuevo.',true);}
+      else{
+        var j=await r.json(); ballots=j.votes||[]; admin=true; loadErr=false;
+        try{sessionStorage.setItem('tirante-adm',pw);}catch(e){}
+        closeLogin(); $('tabs').hidden=false; updateCount(); startPoll(); showView('res');
+      }
+    }catch(e){adminKey='';setMsg('Sin conexión. Probá de nuevo.',true);}
+    $('lgo').disabled=false;
+  }
+  /* Entrada oculta: Ctrl+clic (o Cmd+clic) en el logo; en celular, mantener apretado el logo. */
+  function unlock(){if(admin){$('tabs').hidden=false;showView('res');}else openLogin();}
+  function setupSecret(){
+    var wm=document.querySelector('.wm'),tm=null,sx=0,sy=0;
+    wm.addEventListener('click',function(e){if(e.ctrlKey||e.metaKey){e.preventDefault();unlock();}});
+    wm.addEventListener('contextmenu',function(e){e.preventDefault();if(e.ctrlKey)unlock();});
+    wm.addEventListener('pointerdown',function(e){if(e.pointerType==='mouse')return;sx=e.clientX;sy=e.clientY;clearTimeout(tm);tm=setTimeout(unlock,800);});
+    wm.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>12)clearTimeout(tm);});
+    ['pointerup','pointercancel','pointerleave'].forEach(function(t){wm.addEventListener(t,function(){clearTimeout(tm);});});
+  }
+
+  /* ---------- Resultados ---------- */
+  function tally(list){
+    var t={}; OPTS.forEach(function(o){t[o.k]={k:o.k,p1:0,p2:0,pts:0};});
+    list.forEach(function(v){if(t[v.first])t[v.first].p1++; if(t[v.second])t[v.second].p2++;});
+    var arr=Object.keys(t).map(function(k){var x=t[k];x.pts=x.p1*2+x.p2;return x;});
+    arr.sort(function(a,b){return b.pts-a.pts||b.p1-a.p1||a.k.localeCompare(b.k);});
+    return arr;
+  }
+  function fmt(ts){
+    try{return new Date(ts).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return '—';}
+  }
+  function pl(n,one,many){return n+' '+(n===1?one:many);}
+  function digits(s){return String(s||'').replace(/\D/g,'');}
+  function csvText(){
+    var q=function(s){return '"'+String(s==null?'':s).replace(/"/g,'""')+'"';};
+    var rows=[['Fecha','Nombre','WhatsApp','1.ª opción (2 pts)','2.ª opción (1 pt)','Origen']];
+    ballots.slice().sort(function(a,b){return (a.ts||0)-(b.ts||0);}).forEach(function(v){
+      rows.push([v.ts?new Date(v.ts).toLocaleString('es-AR'):'',v.name,v.phone,label(v.first),label(v.second),v.manual?'Carga manual':'Formulario']);
+    });
+    return '﻿'+rows.map(function(r){return r.map(q).join(';');}).join('\r\n');
+  }
+  function exportCsv(){
+    var blob=new Blob([csvText()],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(blob);
+    var a=document.createElement('a'); a.href=u; a.download='votos-identidad-visual-tirante.csv';
+    document.body.append(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(u);},2000);
+  }
+  function delBtn(id){
+    var b=h('button',{type:'button',class:'link',text:'Quitar'}),armed=false,tm=null;
+    b.addEventListener('click',async function(){
+      if(!armed){armed=true;b.textContent='¿Seguro? Tocá otra vez';tm=setTimeout(function(){armed=false;b.textContent='Quitar';},3500);return;}
+      clearTimeout(tm);
+      try{var r=await api('DELETE','/api/admin?id='+encodeURIComponent(id));if(!r.ok)throw new Error('http');await refresh();}
+      catch(e){b.textContent='No se pudo quitar';}
+    });
+    return b;
+  }
+  function renderResults(){
+    var res=$('res'); res.replaceChildren();
+    var n=ballots.length;
+    updateCount();
+    var head=h('div',{class:'rhead'},
+      h('div',{},h('p',{class:'label',text:'Informe'}),h('h2',{text:'Resultados de la votación'}),
+        h('p',{class:'muted num',text:pl(n,'voto registrado','votos registrados')+' · se actualiza solo'})));
+    var acts=h('div',{class:'actions'});
+    if(n)acts.append(h('button',{type:'button',class:'btn ghost small',text:'Descargar CSV',onclick:exportCsv}));
+    acts.append(h('button',{type:'button',class:'btn ghost small',text:'Salir',onclick:logout}));
+    head.append(acts);
+    res.append(head);
+    if(loadErr){res.append(h('div',{class:'card err'},h('h2',{text:'No se pudieron leer los votos'}),h('p',{class:'muted',text:'Revisá la conexión. Se vuelve a intentar solo cada 15 segundos.'})));}
+    if(!n){
+      if(!loadErr)res.append(h('div',{class:'card'},h('h2',{text:'Todavía no hay votos'}),
+        h('p',{class:'muted',text:'Cuando alguien envíe su boleta, el ranking, el detalle por persona y la opción ganadora aparecen acá. Los votos que lleguen por WhatsApp se cargan en el formulario de abajo.'})));
+      return;
+    }
+    var T=tally(ballots),top=T[0],sec=T[1],o=BY[top.k];
+    var line;
+    if(top.pts===sec.pts&&top.p1===sec.p1){
+      var tied=T.filter(function(x){return x.pts===top.pts&&x.p1===top.p1;}).map(function(x){return 'Opción '+L(x.k);});
+      line='Empate total entre '+tied.join(' y ')+' con '+top.pts+' puntos y las mismas primeras opciones.';
+    }else if(top.pts===sec.pts){
+      line='Empate en puntos con la Opción '+L(sec.k)+' ('+top.pts+' pts). Desempata por más primeras opciones: '+top.p1+' contra '+sec.p1+'.';
+    }else{
+      line='Suma '+top.pts+' puntos, '+pl(top.pts-sec.pts,'punto','puntos')+' más que la Opción '+L(sec.k)+'.';
+    }
+    res.append(h('div',{class:'card win'},
+      h('p',{class:'label',text:top.pts===sec.pts?'Empatadas arriba':'Va ganando'}),
+      h('h2',{text:'Opción '+L(o.k)+' · '+o.n}),
+      h('p',{class:'muted',text:line}),
+      h('p',{class:'label',text:'Colores del sitio para unificar con el local'}),
+      o.web.length?h('div',{class:'chips'},o.web.map(function(c){return h('span',{class:'chip'},h('i',{style:'background:'+c}),c);})):
+        h('p',{class:'muted',text:'Todavía no hay una paleta del sitio definida para esta opción.'})));
+
+    var maxPts=2*n;
+    var chart=h('section',{class:'card','aria-label':'Ranking por puntos'},
+      h('h2',{text:'Ranking por puntos'}),
+      h('div',{class:'legend'},
+        h('span',{},h('i',{style:'background:var(--seg1)'}),'Puntos por 1.ª opción (×2)'),
+        h('span',{},h('i',{style:'background:var(--seg2)'}),'Puntos por 2.ª opción (×1)')));
+    var list=h('ol',{class:'rank'});
+    T.forEach(function(t,i){
+      var op=BY[t.k],p1=t.p1*2/maxPts*100,p2=t.p2/maxPts*100;
+      var track=h('div',{class:'track',role:'img','aria-label':'Opción '+L(t.k)+': '+t.pts+' puntos, '+pl(t.p1,'primera opción','primeras opciones')+' y '+pl(t.p2,'segunda opción','segundas opciones')});
+      if(t.p1)track.append(h('div',{class:'seg s1',style:'width:'+p1+'%',title:'1.ª opción: '+t.p1+' × 2 = '+(t.p1*2)+' pts'}));
+      if(t.p2)track.append(h('div',{class:'seg s2',style:'width:'+p2+'%',title:'2.ª opción: '+t.p2+' × 1 = '+t.p2+' pts'}));
+      list.append(h('li',{class:'rrow'},
+        h('span',{class:'rn',text:String(i+1)}),
+        h('img',{class:'rthumb',src:'img/'+t.k+'.jpg',alt:'',width:56,height:42}),
+        h('div',{class:'rbody'},
+          h('div',{class:'rtop'},h('span',{class:'rname',text:'Opción '+L(t.k)+' · '+op.n}),h('span',{class:'rpts',text:t.pts+' pts'})),
+          h('div',{class:'rsub',text:pl(t.p1,'primera','primeras')+' · '+pl(t.p2,'segunda','segundas')}),
+          track)));
+    });
+    chart.append(list,h('div',{class:'arow'},h('span'),h('span'),h('div',{class:'ax'},h('span',{text:'0 pts'}),h('span',{text:maxPts+' pts · máximo posible'}))));
+    res.append(chart);
+
+    var phones={};
+    ballots.forEach(function(v){var d=digits(v.phone);if(d.length>=8)phones[d]=(phones[d]||0)+1;});
+    var tb=h('tbody');
+    ballots.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);}).forEach(function(v){
+      var d=digits(v.phone);
+      tb.append(h('tr',{},
+        h('td',{class:'num',text:fmt(v.ts)}),
+        h('td',{},h('span',{text:v.name||'—'}),v.manual?h('span',{class:'mini',text:' · carga manual'}):null,
+          (d.length>=8&&phones[d]>1)?h('span',{class:'mini',text:' · mismo WhatsApp que otro voto'}):null),
+        h('td',{text:v.phone||'—'}),
+        h('td',{text:label(v.first)}),
+        h('td',{text:label(v.second)}),
+        h('td',{},delBtn(v.id))));
+    });
+    res.append(h('section',{class:'section-gap'},h('h2',{text:'Detalle por persona'}),
+      h('div',{class:'tablewrap'},h('table',{},
+        h('thead',{},h('tr',{},h('th',{text:'Fecha'}),h('th',{text:'Nombre'}),h('th',{text:'WhatsApp'}),h('th',{text:'1.ª opción'}),h('th',{text:'2.ª opción'}),h('th',{}))),tb))));
+  }
+  function setupManual(){
+    [$('m-1'),$('m-2')].forEach(function(s){
+      s.append(h('option',{value:'',text:'Elegí una opción'}));
+      OPTS.forEach(function(o){s.append(h('option',{value:o.k,text:label(o.k)}));});
+    });
+    $('manual').addEventListener('submit',async function(ev){
+      ev.preventDefault();
+      var msg=$('m-msg'),name=$('m-nombre').value.trim(),a=$('m-1').value,b=$('m-2').value;
+      msg.className='msg';
+      if(name.length<2){msg.textContent='Escribí el nombre de quien votó.';msg.classList.add('bad');return;}
+      if(!a||!b){msg.textContent='Elegí la 1.ª y la 2.ª opción.';msg.classList.add('bad');return;}
+      if(a===b){msg.textContent='La 1.ª y la 2.ª opción tienen que ser distintas.';msg.classList.add('bad');return;}
+      $('m-send').disabled=true;
+      try{
+        var r=await api('POST','/api/admin',{name:name,phone:$('m-wsp').value.trim(),first:a,second:b});
+        if(!r.ok)throw new Error('http');
+        msg.textContent='Voto cargado.';msg.classList.add('good');
+        $('m-nombre').value='';$('m-wsp').value='';$('m-1').value='';$('m-2').value='';
+        await refresh();
+      }catch(e){msg.textContent='No se pudo cargar el voto. Probá de nuevo.';msg.classList.add('bad');}
+      $('m-send').disabled=false;
+    });
+  }
+
+  /* ---------- Arranque ---------- */
+  async function init(){
+    buildOptions(); setupManual(); setupSecret();
+    $('nombre').value=store('tirante-nombre')||''; $('wsp').value=store('tirante-wsp')||'';
+    $('nombre').addEventListener('input',refreshSend);
+    $('send').addEventListener('click',submit);
+    $('tab-votar').addEventListener('click',function(){showView('votar');});
+    $('tab-res').addEventListener('click',function(){showView('res');});
+    $('zx').addEventListener('click',closeZoom);
+    $('zt').addEventListener('click',function(){var z=$('zmid'),on=z.classList.toggle('big');this.textContent=on?'Alejar':'Acercar';z.scrollLeft=0;z.scrollTop=0;});
+    $('zoom').addEventListener('click',function(e){if(e.target===$('zoom')||e.target.classList.contains('zmid'))closeZoom();});
+    $('z1').addEventListener('click',function(){var k=zoomKey;closeZoom();if(k)pick(k,1);});
+    $('z2').addEventListener('click',function(){var k=zoomKey;closeZoom();if(k)pick(k,2);});
+    $('lform').addEventListener('submit',function(e){e.preventDefault();doLogin($('lpw').value);});
+    $('lcancel').addEventListener('click',closeLogin);
+    document.addEventListener('keydown',function(e){
+      if(e.key!=='Escape')return;
+      if(!$('login').hidden)closeLogin(); else if(!$('zoom').hidden)closeZoom();
+    });
+    window.addEventListener('hashchange',function(){if(location.hash==='#resultados')unlock();});
+    updateSelection(); syncChrome();
+
+    /* Si ya votó desde este dispositivo, muestra su voto. */
+    try{
+      var raw=store('tirante-ballot'),v=raw?JSON.parse(raw):null;
+      if(v&&BY[v.first]&&BY[v.second]&&v.first!==v.second){
+        sel[1]=v.first; sel[2]=v.second;
+        if(v.name)$('nombre').value=v.name; if(v.phone)$('wsp').value=v.phone;
+        updateSelection(); showDone(true,v);
+      }
+    }catch(e){}
+
+    /* Sesión de administrador en esta pestaña. */
+    var saved=null; try{saved=sessionStorage.getItem('tirante-adm');}catch(e){}
+    if(saved){
+      adminKey=saved;
+      try{
+        var r=await api('GET','/api/admin');
+        if(r.ok){var j=await r.json();ballots=j.votes||[];admin=true;startPoll();updateCount();}
+        else adminKey='';
+      }catch(e){adminKey='';}
+    }
+    if(location.hash==='#resultados')unlock();
+  }
+  init();
+})();
+
+</script>
+</body>
+</html>

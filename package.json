@@ -1,0 +1,7 @@
+{
+  "name": "tirante-encuesta",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Encuesta de Identidad Visual TIRANTE | Bienes Raíces",
+  "engines": { "node": "20.x" }
+}
